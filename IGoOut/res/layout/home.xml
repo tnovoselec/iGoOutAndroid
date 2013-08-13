@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/home_interests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal"
+        android:gravity="left|center_vertical"
+        android:drawableRight="@drawable/spinner_ab_default_holo_light"
+        android:text="@string/select_interests" />
+
+    <Button
+        android:id="@+id/home_venues"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal"
+        android:gravity="left|center_vertical"
+        android:drawableRight="@drawable/spinner_ab_default_holo_light"
+        android:text="@string/select_venues" />
+
+    <Button
+        android:id="@+id/home_radius"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal"
+        android:gravity="left|center_vertical"
+        android:drawableRight="@drawable/spinner_ab_default_holo_light"
+        android:text="@string/select_radius" />
+    
+    <Button
+        android:id="@+id/home_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_normal"
+        android:gravity="center_horizontal"
+        android:text="@string/search" />
+
+</LinearLayout>

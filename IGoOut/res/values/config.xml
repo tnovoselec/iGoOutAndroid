@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="google_static_map_api" formatted="false">http://maps.google.com/maps/api/staticmap?center=%s,%s&amp;zoom=15&amp;size=400x300&amp;sensor=false</string>
+    <string name="google_map_external" formatted="false">geo:%s,%s?q=%s,%s</string>
+
+</resources>
