@@ -19,9 +19,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockActivity; //gdje se koristi?
 
-public class HomeActivity extends AbstractFragmentActivity implements OnClickListener {
+public class HomeActivity extends AbstractFragmentActivity implements OnClickListener { //zakaj AbstractFragmentActivity?
 
 	private Button interestsBtn;
 	private Button venuesBtn;
@@ -55,7 +55,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	@Override
-	protected void onResume() {
+	protected void onResume() { //kaj toèno se dešava ovdje?
 		super.onResume();
 		locationsListener = new LocationsListener() {
 
@@ -95,7 +95,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	private void onSearchResults(ArrayList<Location> locations) {
-		if (locations != null && locations.size() > 0) {
+		if (locations != null && locations.size() > 0) { // Zakaj dupla provjera?
 			Intent intent = new Intent(this, SearchResultsActivity.class);
 			intent.putExtra(Constants.LOCATIONS, locations);
 			startActivity(intent);
@@ -166,7 +166,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 
 	private boolean[] getSelectedInterests() {
 		boolean[] interests = new boolean[getResources().getStringArray(R.array.interests).length];
-		String savedInterests = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.SELECTED_INTERESTS, null);
+		String savedInterests = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.SELECTED_INTERESTS, null);// Zakaj String, a ne array?
 		if (savedInterests == null) {
 			return interests;
 		} else {
@@ -189,7 +189,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 				sb.append("0");
 			}
 		}
-		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(Constants.SELECTED_INTERESTS, sb.toString()).commit();
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(Constants.SELECTED_INTERESTS, sb.toString()).commit(); //Zakaj ne stavljati jednostavno bool vrijednosti? zakaj se koristi stringbuilder varijabla?
 	}
 
 	private boolean[] getSelectedVenues() {
@@ -220,10 +220,10 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(Constants.SELECTED_VENUES, sb.toString()).commit();
 	}
 
-	private int[] getInterests() {
+	private int[] getInterests() { // Zakaj se koristi pretvorba iz List<Integer> u int[] ?
 		List<Integer> l = new ArrayList<Integer>();
 		for (int i = 0; i < mSelectedInterests.length; i++) {
-			if (mSelectedInterests[i]) {
+			if (mSelectedInterests[i]) { 
 				l.add(i);
 			}
 		}

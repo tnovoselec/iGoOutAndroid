@@ -21,7 +21,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class SearchResultsActivity extends AbstractFragmentActivity implements OnItemClickListener {
 
 	private ListView list;
-	private SearchResultsAdapter adapter;
+	private SearchResultsAdapter adapter; //koja je zadaæa adaptera?
 	private ArrayList<Location> locations;
 
 	@Override
@@ -33,12 +33,12 @@ public class SearchResultsActivity extends AbstractFragmentActivity implements O
 		locations = (ArrayList<Location>) getIntent().getSerializableExtra(Constants.LOCATIONS);
 		if (locations != null) {
 			adapter = new SearchResultsAdapter(this, locations);
-			list.setAdapter(adapter);
+			list.setAdapter(adapter);//?
 		}
 
 		list.setOnItemClickListener(this);
 
-		ActionBar ab = getSupportActionBar();
+		ActionBar ab = getSupportActionBar(); // zakaj se ovo koristi?
 		if (ab != null) {
 			ab.setDisplayHomeAsUpEnabled(true);
 		}
@@ -53,7 +53,7 @@ public class SearchResultsActivity extends AbstractFragmentActivity implements O
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) { //back button?
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 			return true;

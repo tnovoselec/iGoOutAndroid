@@ -56,7 +56,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	private EventsListener eventsListener;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) { //liniju po liniju objasniti :)
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.location);
 
@@ -122,7 +122,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	}
 
 	@Override
-	protected void onResume() {
+	protected void onResume() { //što se dogaða kod resume?
 		super.onResume();
 		eventsListener = new EventsListener() {
 
