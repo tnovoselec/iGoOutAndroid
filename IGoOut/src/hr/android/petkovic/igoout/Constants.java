@@ -9,4 +9,7 @@ public class Constants {
 	public static final String LOCATIONS = "locations";
 	public static final String LOCATION = "location";
 	public static final String EVENT = "event";
+
+	public static final double DEFAULT_LAT = 45.80;
+	public static final double DEFAULT_LNG = 15.9;
 }

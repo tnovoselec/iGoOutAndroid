@@ -51,7 +51,7 @@ public class RestApiClient {
 		return INSTANCE;
 	}
 
-	public void getLocations(int[] interest, int[] venues, int radiusId, final LocationsListener locationsListener) {
+	public void getLocations(int[] interest, int[] venues, int radiusId, double latitude, double longitude, final LocationsListener locationsListener) {
 
 		ErrorListener errorListener = new ErrorListener() {
 
@@ -70,8 +70,8 @@ public class RestApiClient {
 
 		};
 		try {
-			reqQueue.add(new JsonObjectRequest(Method.POST, Config.MAIN_URL + LOCATIONS_PATH, buildLocationJson(interest, venues, radiusId), listener,
-					errorListener));
+			reqQueue.add(new JsonObjectRequest(Method.POST, Config.MAIN_URL + LOCATIONS_PATH,
+					buildLocationJson(interest, venues, radiusId, latitude, longitude), listener, errorListener));
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 			locationsListener.onLocationsReady(null);
@@ -197,7 +197,7 @@ public class RestApiClient {
 		reqQueue.add(new GsonRequest<User>("http://cipele46.org/users/show.json", User.class, headers, userListener, errorListener));
 	}
 
-	private JSONObject buildLocationJson(int[] interest, int[] venue, int radiusId) throws JSONException {
+	private JSONObject buildLocationJson(int[] interest, int[] venue, int radiusId, double latitude, double longitude) throws JSONException {
 		JSONObject json = new JSONObject();
 		JSONArray interests = new JSONArray();
 		for (int i : interest) {
@@ -210,6 +210,8 @@ public class RestApiClient {
 		json.put("interests", interests);
 		json.put("venues", venues);
 		json.put("radiusId", radiusId);
+		json.put("lat", latitude);
+		json.put("lng", longitude);
 		return json;
 
 	}

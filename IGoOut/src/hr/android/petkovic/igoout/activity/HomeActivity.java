@@ -10,9 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -91,7 +94,11 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	private void search() {
 		// onSearchResults(MockData.getLocations());
 		showDialog();
-		RestApiClient.get().getLocations(getInterests(), getVenues(), mSelectedRadius, locationsListener);
+		LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		android.location.Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		double lat = loc != null ? loc.getLatitude() : Constants.DEFAULT_LAT;
+		double lng = loc != null ? loc.getLongitude() : Constants.DEFAULT_LNG;
+		RestApiClient.get().getLocations(getInterests(), getVenues(), mSelectedRadius, lat, lng, locationsListener);
 	}
 
 	private void onSearchResults(ArrayList<Location> locations) {
