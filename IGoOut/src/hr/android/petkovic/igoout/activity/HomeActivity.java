@@ -20,7 +20,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockActivity;
 
@@ -112,11 +114,22 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	private void showInterestsDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.select_interests);
-		builder.setMultiChoiceItems(R.array.venues, mSelectedInterests, new OnMultiChoiceClickListener() {
+		builder.setMultiChoiceItems(R.array.interests, mSelectedInterests, new OnMultiChoiceClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 				mSelectedInterests[which] = isChecked;
+				if (which == 0) {
+					if (isChecked) {
+						setAllChecked(mSelectedInterests);
+					} else {
+//						setAllUnChecked(mSelectedInterests);
+					}
+					for (int i = 0; i < mSelectedInterests.length; i++) {
+						((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
+					}
+
+				}
 			}
 		});
 		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -137,6 +150,16 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 			@Override
 			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 				mSelectedVenues[which] = isChecked;
+				if (which == 0) {
+					if (isChecked) {
+						setAllChecked(mSelectedVenues);
+					} else {
+//						setAllUnChecked(mSelectedVenues);
+					}
+					for (int i = 0; i < mSelectedInterests.length; i++) {
+						((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
+					}
+				}
 			}
 		});
 		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -261,6 +284,18 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 
 	private void saveSelectedRadius() {
 		PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(Constants.SELECTED_RADIUS, mSelectedRadius);
+	}
+
+	private void setAllChecked(boolean[] what) {
+		for (int i = 0; i < what.length; i++) {
+			what[i] = true;
+		}
+	}
+
+	private void setAllUnChecked(boolean[] what) {
+		for (int i = 0; i < what.length; i++) {
+			what[i] = false;
+		}
 	}
 
 }

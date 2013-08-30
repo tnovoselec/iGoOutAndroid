@@ -70,8 +70,8 @@ public class RestApiClient {
 
 		};
 		try {
-			reqQueue.add(new JsonObjectRequest(Method.POST, Config.MAIN_URL + LOCATIONS_PATH,
-					buildLocationJson(interest, venues, radiusId, latitude, longitude), listener, errorListener));
+			reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + LOCATIONS_PATH, buildLocationJson(interest, venues, radiusId, latitude, longitude),
+					listener, errorListener));
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 			locationsListener.onLocationsReady(null);
@@ -97,7 +97,7 @@ public class RestApiClient {
 		};
 		try {
 
-			reqQueue.add(new JsonObjectRequest(Method.GET, Config.MAIN_URL + String.format(EVENTS_PATH, locationId), null, listener, errorListener));
+			reqQueue.add(new DefaultRequest(Method.GET, Config.MAIN_URL + String.format(EVENTS_PATH, locationId), null, listener, errorListener));
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 			eventsListener.onEventsReady(null);
@@ -127,25 +127,17 @@ public class RestApiClient {
 		};
 
 		JSONObject userObj = new JSONObject();
-		JSONObject requestObj = new JSONObject();
 
 		try {
 			userObj.put("password", password);
 			userObj.put("username", username);
-
-			requestObj.put("user", userObj);
 
 		} catch (JSONException e) {
 			userListener.onFailure(e);
 			return;
 		}
 
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Content-Type", "application/json");
-
-		RegistrationRequest jsonReq = new RegistrationRequest(Method.POST, Config.MAIN_URL + USER_REGISTER, requestObj, headers, listener, errorListener);
-
-		reqQueue.add(jsonReq);
+		reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + USER_REGISTER, userObj, listener, errorListener));
 
 	}
 
@@ -162,39 +154,40 @@ public class RestApiClient {
 		return user;
 	}
 
-	private static String basicAuthHeaderValue(String username, String password) {
-		String x = username + ":" + password;
-		try {
-			return "Basic " + Base64.encodeToString(x.getBytes("UTF-8"), Base64.DEFAULT);
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
-
-	public void loginUser(String email, String password, final UserListener url) {
+	public void loginUser(String username, String password, final UserListener url) {
 
 		ErrorListener errorListener = new ErrorListener() {
 
 			@Override
 			public void onErrorResponse(VolleyError error) {
-
+				Log.e(TAG, "Login failed", error);
+				// Log.e(TAG, new String(erroerror.networkResponse.data));
 				url.onFailure(error);
 			}
 		};
 
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Authorization", basicAuthHeaderValue(email, password));
-
-		Listener<User> userListener = new Listener<User>() {
+		Listener<JSONObject> listener = new Listener<JSONObject>() {
 
 			@Override
-			public void onResponse(User user) {
+			public void onResponse(JSONObject response) {
+				Log.d(TAG, "Login succeded" + response);
+				url.onSuccess(getUser(response));
 
-				url.onSuccess(user);
 			}
 		};
 
-		reqQueue.add(new GsonRequest<User>("http://cipele46.org/users/show.json", User.class, headers, userListener, errorListener));
+		JSONObject userObj = new JSONObject();
+
+		try {
+			userObj.put("password", password);
+			userObj.put("username", username);
+
+		} catch (JSONException e) {
+			url.onFailure(e);
+			return;
+		}
+
+		reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + USER_LOGIN, userObj, listener, errorListener));
 	}
 
 	private JSONObject buildLocationJson(int[] interest, int[] venue, int radiusId, double latitude, double longitude) throws JSONException {

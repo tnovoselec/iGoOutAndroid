@@ -17,24 +17,24 @@
             android:padding="@dimen/padding_normal"
             android:text="@string/sign_up" />
 
-
-
         <EditText
             android:id="@+id/sign_in_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
-            android:padding="@dimen/padding_normal" />
+            android:padding="@dimen/padding_normal"
+            android:text="pero" />
 
         <EditText
             android:id="@+id/sign_in_password"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:padding="@dimen/padding_normal" />
-        
-         <Button
+            android:inputType="textPassword"
+            android:padding="@dimen/padding_normal"
+            android:text="peric" />
+
+        <Button
             android:id="@+id/sign_in_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
