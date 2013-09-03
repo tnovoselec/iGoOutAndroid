@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal" >
+
+    <RatingBar
+        android:id="@+id/event_rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:max="5"
+        android:stepSize="1"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="@dimen/padding_normal" />
+
+</LinearLayout>

@@ -10,21 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
-
-import com.actionbarsherlock.app.SherlockActivity;
 
 public class HomeActivity extends AbstractFragmentActivity implements OnClickListener {
 
@@ -62,15 +58,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	@Override
 	protected void onResume() {
 		super.onResume();
-		locationsListener = new LocationsListener() {
-
-			@Override
-			public void onLocationsReady(ArrayList<Location> locations) {
-				hideDialog();
-				HomeActivity.this.locations = locations;
-				onSearchResults(locations);
-			}
-		};
+	
 	}
 
 	@Override
@@ -95,6 +83,15 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 
 	private void search() {
 		// onSearchResults(MockData.getLocations());
+		locationsListener = new LocationsListener() {
+
+			@Override
+			public void onLocationsReady(ArrayList<Location> locations) {
+				hideDialog();
+				HomeActivity.this.locations = locations;
+				onSearchResults(locations);
+			}
+		};
 		showDialog();
 		LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		android.location.Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -108,6 +105,8 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 			Intent intent = new Intent(this, SearchResultsActivity.class);
 			intent.putExtra(Constants.LOCATIONS, locations);
 			startActivity(intent);
+		}else{
+			showErrorMsg();
 		}
 	}
 
@@ -283,7 +282,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	private void saveSelectedRadius() {
-		PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(Constants.SELECTED_RADIUS, mSelectedRadius);
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(Constants.SELECTED_RADIUS, mSelectedRadius).commit();
 	}
 
 	private void setAllChecked(boolean[] what) {
@@ -296,6 +295,20 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 		for (int i = 0; i < what.length; i++) {
 			what[i] = false;
 		}
+	}
+	private void showErrorMsg() {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setTitle(R.string.app_name);
+		builder.setMessage(R.string.error_no_locations_found);
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		builder.create().show();
 	}
 
 }

@@ -4,6 +4,10 @@ import hr.android.petkovic.igoout.R;
 import hr.android.petkovic.igoout.api.RestApiClient;
 import hr.android.petkovic.igoout.api.UserListener;
 import hr.android.petkovic.igoout.model.User;
+import hr.android.petkovic.igoout.utils.Utils;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -48,8 +52,8 @@ public class SignUpActivity extends AbstractFragmentActivity implements OnClickL
 		String username = usernameEdt.getText() != null ? usernameEdt.getText().toString() : null;
 		String password = passwordEdt.getText() != null ? passwordEdt.getText().toString() : null;
 		String passwordRepeat = repeatPasswordEdt.getText() != null ? repeatPasswordEdt.getText().toString() : null;
-		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(passwordRepeat)) {
-			Toast.makeText(this, "Error occurred, please check your data", Toast.LENGTH_SHORT).show();
+		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(passwordRepeat) || username.length() < 4 || password.length() < 4) {
+			showErrorMsg(getString(R.string.error_input_too_short));
 		} else {
 			if (password.equals(passwordRepeat)) {
 				userListener = new UserListener() {
@@ -57,21 +61,41 @@ public class SignUpActivity extends AbstractFragmentActivity implements OnClickL
 					@Override
 					public void onSuccess(User user) {
 						hideDialog();
+						Utils.saveUserSession(user, SignUpActivity.this);
 						startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
 					}
 
 					@Override
-					public void onFailure(Throwable t) {
+					public void onFailure(Throwable t, int status) {
 						hideDialog();
-						Toast.makeText(SignUpActivity.this, "Error", Toast.LENGTH_SHORT).show();
+						if (status == 551) {
+							showErrorMsg(getString(R.string.error_user_exists));
+						} else {
+							showErrorMsg(getString(R.string.error_server_error));
+						}
 
 					}
 				};
 				RestApiClient.get().registerUser(username, password, userListener);
-			}else{
-				Toast.makeText(this, "Passwords dont match", Toast.LENGTH_SHORT).show();
+			} else {
+				showErrorMsg(getString(R.string.error_passwords_dont_match));
 			}
 		}
+	}
+
+	private void showErrorMsg(String msg) {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setTitle(R.string.app_name);
+		builder.setMessage(msg);
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		builder.create().show();
 	}
 
 }

@@ -4,6 +4,10 @@ import hr.android.petkovic.igoout.R;
 import hr.android.petkovic.igoout.api.RestApiClient;
 import hr.android.petkovic.igoout.api.UserListener;
 import hr.android.petkovic.igoout.model.User;
+import hr.android.petkovic.igoout.utils.Utils;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,9 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-
 public class SignInActivity extends AbstractFragmentActivity implements OnClickListener {
+
+	private static long ONE_MONTH_IN_MILIS = 30 * 24 * 60 * 60 * 1000L;
 
 	private Button signUpBtn;
 	private Button signInBtn;
@@ -35,6 +39,15 @@ public class SignInActivity extends AbstractFragmentActivity implements OnClickL
 
 		signUpBtn.setOnClickListener(this);
 		signInBtn.setOnClickListener(this);
+		
+		User user = Utils.getUser(this);
+		if (user != null){
+			long lastVisit =Utils.getLastVisit(this);
+			if (System.currentTimeMillis() - lastVisit < ONE_MONTH_IN_MILIS){
+				Utils.updateLastVisit(this);
+				startActivity(new Intent(SignInActivity.this, HomeActivity.class));
+			}
+		}
 	}
 
 	@Override
@@ -58,18 +71,32 @@ public class SignInActivity extends AbstractFragmentActivity implements OnClickL
 				@Override
 				public void onSuccess(User user) {
 					hideDialog();
+					Utils.saveUserSession(user, SignInActivity.this);
 					startActivity(new Intent(SignInActivity.this, HomeActivity.class));
 				}
 
 				@Override
-				public void onFailure(Throwable t) {
+				public void onFailure(Throwable t, int status) {
 					hideDialog();
-					Toast.makeText(SignInActivity.this, "Error", Toast.LENGTH_SHORT).show();
-
+					showErrorMsg();
 				}
 			};
 			RestApiClient.get().loginUser(username, password, userListener);
 		}
 	}
 
+	private void showErrorMsg() {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setTitle(R.string.app_name);
+		builder.setMessage(R.string.error_sign_in);
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		builder.create().show();
+	}
 }
