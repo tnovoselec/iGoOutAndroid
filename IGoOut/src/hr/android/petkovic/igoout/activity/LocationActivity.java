@@ -136,7 +136,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	}
 
 	@Override
-	protected void onResume() { //što se dogaða kod resume?
+	protected void onResume() { //ï¿½to se dogaï¿½a kod resume?
 		super.onResume();
 	
 	}
@@ -173,6 +173,9 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+		if (position == 0){
+			return;
+		}
 		Intent i = new Intent(this, EventActivity.class);
 		i.putExtra(Constants.EVENT, events.get(position - 1));
 		i.putExtra(Constants.LOCATION, location);
