@@ -107,6 +107,20 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 			ab.setTitle(location.getName());
 			ab.setDisplayHomeAsUpEnabled(true);
 		}
+		eventsListener = new EventsListener() {
+
+			@Override
+			public void onEventsReady(ArrayList<Event> events) {
+				hideDialog();
+				LocationActivity.this.events = events;
+				if (events == null) {
+					Toast.makeText(LocationActivity.this, "Unable to get events..", Toast.LENGTH_SHORT).show();
+				} else {
+					populateEvents();
+				}
+			}
+		};
+		getData();
 		
 	}
 
@@ -124,20 +138,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	@Override
 	protected void onResume() { //što se dogaða kod resume?
 		super.onResume();
-		eventsListener = new EventsListener() {
-
-			@Override
-			public void onEventsReady(ArrayList<Event> events) {
-				hideDialog();
-				LocationActivity.this.events = events;
-				if (events == null) {
-					Toast.makeText(LocationActivity.this, "Unable to get events..", Toast.LENGTH_SHORT).show();
-				} else {
-					populateEvents();
-				}
-			}
-		};
-		getData();
+	
 	}
 
 	@Override

@@ -10,21 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.actionbarsherlock.app.SherlockActivity; //gdje se koristi?
-
-public class HomeActivity extends AbstractFragmentActivity implements OnClickListener { //zakaj AbstractFragmentActivity?
+public class HomeActivity extends AbstractFragmentActivity implements OnClickListener {
 
 	private Button interestsBtn;
 	private Button venuesBtn;
@@ -58,17 +56,9 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	@Override
-	protected void onResume() { //kaj toèno se dešava ovdje?
+	protected void onResume() {
 		super.onResume();
-		locationsListener = new LocationsListener() {
-
-			@Override
-			public void onLocationsReady(ArrayList<Location> locations) {
-				hideDialog();
-				HomeActivity.this.locations = locations;
-				onSearchResults(locations);
-			}
-		};
+	
 	}
 
 	@Override
@@ -93,6 +83,15 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 
 	private void search() {
 		// onSearchResults(MockData.getLocations());
+		locationsListener = new LocationsListener() {
+
+			@Override
+			public void onLocationsReady(ArrayList<Location> locations) {
+				hideDialog();
+				HomeActivity.this.locations = locations;
+				onSearchResults(locations);
+			}
+		};
 		showDialog();
 		LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		android.location.Location loc = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -102,21 +101,34 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	private void onSearchResults(ArrayList<Location> locations) {
-		if (locations != null && locations.size() > 0) { // Zakaj dupla provjera?
+		if (locations != null && locations.size() > 0) {
 			Intent intent = new Intent(this, SearchResultsActivity.class);
 			intent.putExtra(Constants.LOCATIONS, locations);
 			startActivity(intent);
+		}else{
+			showErrorMsg();
 		}
 	}
 
 	private void showInterestsDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.select_interests);
-		builder.setMultiChoiceItems(R.array.venues, mSelectedInterests, new OnMultiChoiceClickListener() {
+		builder.setMultiChoiceItems(R.array.interests, mSelectedInterests, new OnMultiChoiceClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 				mSelectedInterests[which] = isChecked;
+				if (which == 0) {
+					if (isChecked) {
+						setAllChecked(mSelectedInterests);
+					} else {
+//						setAllUnChecked(mSelectedInterests);
+					}
+					for (int i = 0; i < mSelectedInterests.length; i++) {
+						((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
+					}
+
+				}
 			}
 		});
 		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -137,6 +149,16 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 			@Override
 			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
 				mSelectedVenues[which] = isChecked;
+				if (which == 0) {
+					if (isChecked) {
+						setAllChecked(mSelectedVenues);
+					} else {
+//						setAllUnChecked(mSelectedVenues);
+					}
+					for (int i = 0; i < mSelectedInterests.length; i++) {
+						((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
+					}
+				}
 			}
 		});
 		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -173,7 +195,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 
 	private boolean[] getSelectedInterests() {
 		boolean[] interests = new boolean[getResources().getStringArray(R.array.interests).length];
-		String savedInterests = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.SELECTED_INTERESTS, null);// Zakaj String, a ne array?
+		String savedInterests = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.SELECTED_INTERESTS, null);
 		if (savedInterests == null) {
 			return interests;
 		} else {
@@ -196,7 +218,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 				sb.append("0");
 			}
 		}
-		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(Constants.SELECTED_INTERESTS, sb.toString()).commit(); //Zakaj ne stavljati jednostavno bool vrijednosti? zakaj se koristi stringbuilder varijabla?
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(Constants.SELECTED_INTERESTS, sb.toString()).commit();
 	}
 
 	private boolean[] getSelectedVenues() {
@@ -227,10 +249,10 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 		PreferenceManager.getDefaultSharedPreferences(this).edit().putString(Constants.SELECTED_VENUES, sb.toString()).commit();
 	}
 
-	private int[] getInterests() { // Zakaj se koristi pretvorba iz List<Integer> u int[] ?
+	private int[] getInterests() {
 		List<Integer> l = new ArrayList<Integer>();
 		for (int i = 0; i < mSelectedInterests.length; i++) {
-			if (mSelectedInterests[i]) { 
+			if (mSelectedInterests[i]) {
 				l.add(i);
 			}
 		}
@@ -260,7 +282,33 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	private void saveSelectedRadius() {
-		PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(Constants.SELECTED_RADIUS, mSelectedRadius);
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putInt(Constants.SELECTED_RADIUS, mSelectedRadius).commit();
+	}
+
+	private void setAllChecked(boolean[] what) {
+		for (int i = 0; i < what.length; i++) {
+			what[i] = true;
+		}
+	}
+
+	private void setAllUnChecked(boolean[] what) {
+		for (int i = 0; i < what.length; i++) {
+			what[i] = false;
+		}
+	}
+	private void showErrorMsg() {
+		AlertDialog.Builder builder = new Builder(this);
+		builder.setTitle(R.string.app_name);
+		builder.setMessage(R.string.error_no_locations_found);
+		builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		builder.create().show();
 	}
 
 }

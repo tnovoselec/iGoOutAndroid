@@ -23,6 +23,16 @@
     <string name="start_time">Start time: %s</string>
     <string name="more_info">More info: %s</string>
     <string name="please_wait">Please wait...</string>
+    <string name="rate">Rate</string>
+    <string name="alert_me">Alert me</string>
+    <string name="comment">Comment</string>
+    <string name="comment_event">Comment on event</string>
+    <string name="rate_event">Rate event</string>
+    <string name="cancel">Cancel</string>
+    <string name="send">Send</string>
+    <string name="write_comment">Write your comment here...</string>
+    <string name="event_rated_successfully">Event rated successfully!</string>
+    <string name="comment_added_successfully">Comment added successfully!</string>
 
     <string-array name="interests">
         <item>All</item>
@@ -62,5 +72,15 @@
         <item>50KM</item>
         <item>> 50KM</item>
     </string-array>
+
+    <!-- Error messages -->
+    <string name="error_sign_in">Wrong username/password combination! Please repeat input.</string>
+    <string name="error_user_exists">Username already in use! Please select a different one.</string>
+    <string name="error_server_error">There was problem with server. Please try later.</string>
+    <string name="error_passwords_dont_match">Password and repeated password do not match. Please check your input.</string>
+    <string name="error_input_too_short">Username and password need to be at least 4 characters long. Please repeat your input.</string>
+    <string name="error_no_locations_found">Unfortunately, there is no location that matches your search parameters. Please increase the Search radius or change search parameters.</string>
+    <string name="error_already_rated">You already rated this event.</string>
+    <string name="error_max_comments">3 comments per user are allowed for one event.</string>
 
 </resources>

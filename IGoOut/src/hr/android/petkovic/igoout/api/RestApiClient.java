@@ -1,6 +1,7 @@
 package hr.android.petkovic.igoout.api;
 
 import hr.android.petkovic.igoout.Config;
+import hr.android.petkovic.igoout.model.Comment;
 import hr.android.petkovic.igoout.model.Event;
 import hr.android.petkovic.igoout.model.Location;
 import hr.android.petkovic.igoout.model.User;
@@ -36,6 +37,8 @@ public class RestApiClient {
 	private static final String COMMENTS_PATH = "/comments/%s";
 	private static final String USER_REGISTER = "/user/register";
 	private static final String USER_LOGIN = "/user/login";
+	private static final String RATINGS_PATH = "/ratings";
+	private static final String COMMENT_PATH = "/comments";
 
 	private RequestQueue reqQueue;
 	private static RestApiClient INSTANCE;
@@ -70,8 +73,8 @@ public class RestApiClient {
 
 		};
 		try {
-			reqQueue.add(new JsonObjectRequest(Method.POST, Config.MAIN_URL + LOCATIONS_PATH,
-					buildLocationJson(interest, venues, radiusId, latitude, longitude), listener, errorListener));
+			reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + LOCATIONS_PATH, buildLocationJson(interest, venues, radiusId, latitude, longitude),
+					listener, errorListener));
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 			locationsListener.onLocationsReady(null);
@@ -97,12 +100,112 @@ public class RestApiClient {
 		};
 		try {
 
-			reqQueue.add(new JsonObjectRequest(Method.GET, Config.MAIN_URL + String.format(EVENTS_PATH, locationId), null, listener, errorListener));
+			reqQueue.add(new DefaultRequest(Method.GET, Config.MAIN_URL + String.format(EVENTS_PATH, locationId), null, listener, errorListener));
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage());
 			eventsListener.onEventsReady(null);
 		}
 
+	}
+
+	public void rateEvent(int eventId, int userId, String username, int rating, final RateListener rateListener) {
+		ErrorListener errorListener = new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				int code = error.networkResponse != null ? error.networkResponse.statusCode : 500;
+				rateListener.onFailure(code);
+			}
+		};
+
+		Listener<JSONObject> listener = new Listener<JSONObject>() {
+
+			@Override
+			public void onResponse(JSONObject response) {
+				rateListener.onSuccess();
+			}
+
+		};
+		try {
+			JSONObject j = buildRatingJson(eventId, userId, username, rating);
+
+			reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + RATINGS_PATH, j, listener, errorListener));
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+			rateListener.onFailure(500);
+		}
+	}
+
+	private JSONObject buildRatingJson(int eventId, int userId, String username, int rating) throws JSONException {
+		JSONObject j = new JSONObject();
+		j.put("event_id", eventId);
+		j.put("user_id", userId);
+		j.put("username", username);
+		j.put("rating", rating);
+		return j;
+	}
+
+	public void commentEvent(int eventId, int userId, String username, String comment, final CommentListener commentListener) {
+		ErrorListener errorListener = new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				int code = error.networkResponse != null ? error.networkResponse.statusCode : 500;
+				commentListener.onFailure(code);
+			}
+		};
+
+		Listener<JSONObject> listener = new Listener<JSONObject>() {
+
+			@Override
+			public void onResponse(JSONObject response) {
+				commentListener.onSuccess();
+			}
+
+		};
+		try {
+			JSONObject j = buildCommentJson(eventId, userId, username, comment);
+
+			reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + COMMENT_PATH, j, listener, errorListener));
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+			commentListener.onFailure(500);
+		}
+	}
+
+	private JSONObject buildCommentJson(int eventId, int userId, String username, String comment) throws JSONException {
+		JSONObject j = new JSONObject();
+		j.put("event_id", eventId);
+		j.put("user_id", userId);
+		j.put("username", username);
+		j.put("comment", comment);
+		return j;
+	}
+
+	public void getComments(int eventId, final CommentsListener commentsListener) {
+		ErrorListener errorListener = new ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				commentsListener.onCommentsReady(null);
+			}
+		};
+
+		Listener<JSONObject> listener = new Listener<JSONObject>() {
+
+			@Override
+			public void onResponse(JSONObject response) {
+				commentsListener.onCommentsReady(parseComments(response));
+			}
+
+		};
+		try {
+
+			reqQueue.add(new DefaultRequest(Method.GET, Config.MAIN_URL + String.format(COMMENTS_PATH, eventId), null, listener, errorListener));
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+			commentsListener.onCommentsReady(null);
+		}
 	}
 
 	public void registerUser(String username, String password, final UserListener userListener) {
@@ -112,7 +215,8 @@ public class RestApiClient {
 			@Override
 			public void onErrorResponse(VolleyError error) {
 				Log.e(TAG, "Registration failed", error);
-				userListener.onFailure(error);
+				int code = error.networkResponse != null ? error.networkResponse.statusCode : 500;
+				userListener.onFailure(error, code);
 			}
 		};
 
@@ -127,25 +231,17 @@ public class RestApiClient {
 		};
 
 		JSONObject userObj = new JSONObject();
-		JSONObject requestObj = new JSONObject();
 
 		try {
 			userObj.put("password", password);
 			userObj.put("username", username);
 
-			requestObj.put("user", userObj);
-
 		} catch (JSONException e) {
-			userListener.onFailure(e);
+			userListener.onFailure(e, 500);
 			return;
 		}
 
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Content-Type", "application/json");
-
-		RegistrationRequest jsonReq = new RegistrationRequest(Method.POST, Config.MAIN_URL + USER_REGISTER, requestObj, headers, listener, errorListener);
-
-		reqQueue.add(jsonReq);
+		reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + USER_REGISTER, userObj, listener, errorListener));
 
 	}
 
@@ -153,48 +249,52 @@ public class RestApiClient {
 
 		User user = new User();
 		try {
+			user.setPassword(json.optString("password"));
+			user.setUsername(json.optString("username"));
 			user.setCommentedEvents(parseIntArray(json.optJSONArray("commentedEvents")));
 			user.setId(json.optInt("id"));
 			user.setRatedEvents(parseIntArray(json.optJSONArray("ratedEvents")));
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return user;
 	}
 
-	private static String basicAuthHeaderValue(String username, String password) {
-		String x = username + ":" + password;
-		try {
-			return "Basic " + Base64.encodeToString(x.getBytes("UTF-8"), Base64.DEFAULT);
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
-
-	public void loginUser(String email, String password, final UserListener url) {
+	public void loginUser(String username, String password, final UserListener url) {
 
 		ErrorListener errorListener = new ErrorListener() {
 
 			@Override
 			public void onErrorResponse(VolleyError error) {
-
-				url.onFailure(error);
+				Log.e(TAG, "Login failed", error);
+				// Log.e(TAG, new String(erroerror.networkResponse.data));
+				int code = error.networkResponse != null ? error.networkResponse.statusCode : 500;
+				url.onFailure(error, code);
 			}
 		};
 
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Authorization", basicAuthHeaderValue(email, password));
-
-		Listener<User> userListener = new Listener<User>() {
+		Listener<JSONObject> listener = new Listener<JSONObject>() {
 
 			@Override
-			public void onResponse(User user) {
+			public void onResponse(JSONObject response) {
+				Log.d(TAG, "Login succeded" + response);
+				url.onSuccess(getUser(response));
 
-				url.onSuccess(user);
 			}
 		};
 
-		reqQueue.add(new GsonRequest<User>("http://cipele46.org/users/show.json", User.class, headers, userListener, errorListener));
+		JSONObject userObj = new JSONObject();
+
+		try {
+			userObj.put("password", password);
+			userObj.put("username", username);
+
+		} catch (JSONException e) {
+			url.onFailure(e, 500);
+			return;
+		}
+
+		reqQueue.add(new DefaultRequest(Method.POST, Config.MAIN_URL + USER_LOGIN, userObj, listener, errorListener));
 	}
 
 	private JSONObject buildLocationJson(int[] interest, int[] venue, int radiusId, double latitude, double longitude) throws JSONException {
@@ -216,30 +316,69 @@ public class RestApiClient {
 
 	}
 
+	private ArrayList<Comment> parseComments(JSONObject jsonComments) {
+		ArrayList<Comment> list = new ArrayList<Comment>();
+		try {
+			JSONArray comments = jsonComments.optJSONArray("comment");
+			if (comments == null) {
+				list.add(getCommentFromJSON(jsonComments.optJSONObject("comment")));
+				return list;
+			}
+			for (int i = 0; i < comments.length(); i++) {
+				JSONObject j = comments.getJSONObject(i);
+
+				list.add(getCommentFromJSON(j));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	private Comment getCommentFromJSON(JSONObject j) {
+		Comment comment = new Comment();
+		comment.setComment(j.optString("comment"));
+		comment.setDate(j.optString("date"));
+		comment.setEventId(j.optInt("eventId"));
+		comment.setId(j.optInt("id"));
+		comment.setUserId(j.optInt("userId"));
+		comment.setUsername(j.optString("username"));
+		return comment;
+	}
+
 	private ArrayList<Event> parseEvents(JSONObject jsonEvents) {
 		ArrayList<Event> list = new ArrayList<Event>();
 		try {
-			JSONArray events = jsonEvents.getJSONArray("event");
+			JSONArray events = jsonEvents.optJSONArray("event");
+			if (events == null) {
+				list.add(getEventFromJSON(jsonEvents.optJSONObject("event")));
+				return list;
+			}
 			for (int i = 0; i < events.length(); i++) {
 				JSONObject j = events.getJSONObject(i);
-				Event e = new Event();
-				e.setAssignedInterest(parseIntArray(j.optJSONArray("assignedInterest")));
-				e.setComments(parseIntArray(j.optJSONArray("comments")));
-				e.setDetailsUrl(j.optString("detailsUrl"));
-				e.setId(j.optInt("id"));
-				e.setLocationId(j.optInt("locationId"));
-				e.setName(j.optString("name"));
-				e.setPictureUrl(j.optString("pictureUrl"));
-				e.setRatingAvg((float) j.optDouble("ratingAvg"));
-				e.setStartTime(j.optString("startTime"));
-				e.setSummary(j.optString("summary"));
-				list.add(e);
+
+				list.add(getEventFromJSON(j));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return list;
 
+	}
+
+	private Event getEventFromJSON(JSONObject j) throws JSONException {
+		Event e = new Event();
+		e.setAssignedInterest(parseIntArray(j.optJSONArray("assignedInterest")));
+		e.setComments(parseIntArray(j.optJSONArray("comments")));
+		e.setDetailsUrl(j.optString("detailsUrl"));
+		e.setId(j.optInt("id"));
+		e.setLocationId(j.optInt("locationId"));
+		e.setName(j.optString("name"));
+		e.setPictureUrl(j.optString("pictureUrl"));
+		e.setRatingAvg((float) j.optDouble("ratingAvg"));
+		e.setStartTime(j.optString("startTime"));
+		e.setSummary(j.optString("summary"));
+		return e;
 	}
 
 	private ArrayList<Location> parseLocations(JSONObject jsonLocations) {

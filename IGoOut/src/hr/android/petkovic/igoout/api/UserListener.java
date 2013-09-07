@@ -6,5 +6,5 @@ public interface UserListener {
 
 	void onSuccess(User user);
 	
-	void onFailure(Throwable t);
+	void onFailure(Throwable t, int status);
 }
