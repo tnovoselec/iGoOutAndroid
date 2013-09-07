@@ -179,7 +179,7 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.location_share) {
+		if (item.getItemId() == R.id.event_share) {
 			Intent intent = new Intent(Intent.ACTION_SEND);
 			intent.putExtra(Intent.EXTRA_SUBJECT, event.getName());
 			intent.putExtra(Intent.EXTRA_TEXT, event.getDetailsUrl());
