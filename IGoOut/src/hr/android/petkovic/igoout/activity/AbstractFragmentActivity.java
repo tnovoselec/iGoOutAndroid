@@ -4,7 +4,7 @@ import hr.android.petkovic.igoout.fragment.ProgressDialogFragment;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class AbstractFragmentActivity extends SherlockFragmentActivity {
+public abstract class AbstractFragmentActivity extends SherlockFragmentActivity {
 
 	@Override
 	protected void onPause() {

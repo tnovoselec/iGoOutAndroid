@@ -70,7 +70,7 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.event);
-
+		
 		mRequestQueue = Volley.newRequestQueue(this);
 		imageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache(BitmapLruCache.getDefaultLruCacheSize()));
 		interestsList = getResources().getStringArray(R.array.interests);
