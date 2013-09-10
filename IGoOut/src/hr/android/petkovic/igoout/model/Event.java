@@ -18,6 +18,7 @@ public class Event implements Serializable {
 	private float ratingAvg;
 	private int[] comments;
 	private int[] assignedInterest;
+	private String interest;
 
 	public int getId() {
 		return id;
@@ -97,6 +98,14 @@ public class Event implements Serializable {
 
 	public void setAssignedInterest(int[] assignedInterest) {
 		this.assignedInterest = assignedInterest;
+	}
+
+	public String getInterest() {
+		return interest;
+	}
+
+	public void setInterest(String interest) {
+		this.interest = interest;
 	}
 
 }

@@ -20,6 +20,7 @@ public class Location implements Serializable {
 	private String summary;
 	private String website;
 	private int[] events;
+	private int[] interests;
 	private String pictureUrl;
 
 	public int getId() {
@@ -116,6 +117,14 @@ public class Location implements Serializable {
 
 	public void setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
+	}
+
+	public int[] getInterests() {
+		return interests;
+	}
+
+	public void setInterests(int[] interests) {
+		this.interests = interests;
 	}
 
 }

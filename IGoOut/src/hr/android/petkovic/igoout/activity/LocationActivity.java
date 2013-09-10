@@ -56,7 +56,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	private EventsListener eventsListener;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) { //liniju po liniju objasniti :)
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.location);
 
@@ -65,7 +65,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 
 		header = getLayoutInflater().inflate(R.layout.location_header, null, false);
 		eventList = (ListView) findViewById(R.id.location_event_list);
-		eventList.addHeaderView(header);
+		eventList.addHeaderView(header, null, false);
 
 		cont = findViewById(R.id.location_header_cont);
 		detailsCont = findViewById(R.id.location_header_details_cont);
@@ -87,7 +87,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 		locationMap.setDefaultImageResId(R.drawable.ic_launcher);
 		locationMap.setImageUrl(getString(R.string.google_static_map_api, location.getLat(), location.getLng()), imageLoader);
 		name.setText(location.getName());
-		type.setText(location.getType());
+		type.setText(location.getType().toUpperCase());
 		address.setText(location.getAddress());
 		website.setText(location.getWebsite());
 		workingHours.setText(location.getWorkingHours());
@@ -99,6 +99,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 		// events = MockData.getEvents();
 
 		cont.setOnClickListener(this);
+		website.setOnClickListener(this);
 		locationMap.setOnClickListener(this);
 		eventList.setOnItemClickListener(this);
 
@@ -121,7 +122,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 			}
 		};
 		getData();
-		
+
 	}
 
 	private void getData() {
@@ -130,15 +131,24 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 		RestApiClient.get().getEvents(location.getId(), eventsListener);
 	}
 
+	private String buildInterests() {
+		StringBuilder sb = new StringBuilder();
+		for (int i : location.getInterests()) {
+			sb.append(location.getInterests()[i]);
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
+
 	private void populateEvents() {
 		adapter = new EventListAdapter(this, events);
 		eventList.setAdapter(adapter);
 	}
 
 	@Override
-	protected void onResume() { //�to se doga�a kod resume?
+	protected void onResume() { // �to se doga�a kod resume?
 		super.onResume();
-	
+
 	}
 
 	@Override
@@ -173,7 +183,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-		if (position == 0){
+		if (position == 0) {
 			return;
 		}
 		Intent i = new Intent(this, EventActivity.class);
@@ -185,11 +195,19 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	@Override
 	public void onClick(View v) {
 		if (v == cont) {
-			detailsCont.setVisibility(View.VISIBLE);
+			detailsCont.setVisibility(detailsCont.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
 		} else if (v == locationMap) {
 			startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(getString(R.string.google_map_external, location.getLat(),
 					location.getLng(), location.getLat(), location.getLng()))));
+		} else if (v == website) {
+			openBrowser();
 		}
+	}
+
+	private void openBrowser() {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(location.getWebsite()));
+		startActivity(intent);
 	}
 
 }

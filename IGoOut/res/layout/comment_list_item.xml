@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:hint="title"
         android:paddingBottom="@dimen/padding_normal"
+        android:textColor="@color/grey"
         android:textSize="@dimen/text_size_big" />
 
     <TextView

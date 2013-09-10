@@ -51,7 +51,8 @@ public class EventListAdapter extends BaseAdapter {
 		TextView interests = (TextView) v.findViewById(R.id.event_list_item_interests);
 
 		title.setText(event.getName());
-		interests.setText(buildInterests(event));
+		// interests.setText(buildInterests(event));
+		interests.setText(event.getInterest());
 		return v;
 	}
 

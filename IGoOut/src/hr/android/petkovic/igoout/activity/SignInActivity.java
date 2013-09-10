@@ -46,6 +46,7 @@ public class SignInActivity extends AbstractFragmentActivity implements OnClickL
 			if (System.currentTimeMillis() - lastVisit < ONE_MONTH_IN_MILIS){
 				Utils.updateLastVisit(this);
 				startActivity(new Intent(SignInActivity.this, HomeActivity.class));
+				finish();
 			}
 		}
 	}

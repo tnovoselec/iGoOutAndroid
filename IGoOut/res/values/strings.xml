@@ -18,8 +18,8 @@
     <string name="select_venues">Select venues</string>
     <string name="select_radius">Select radius</string>
     <string name="share">Share</string>
-    <string name="events">Events</string>
-    <string name="comments">Comments</string>
+    <string name="events">EVENTS</string>
+    <string name="comments">COMMENTS</string>
     <string name="start_time">Start time: %s</string>
     <string name="more_info">More info: %s</string>
     <string name="please_wait">Please wait...</string>
@@ -33,6 +33,8 @@
     <string name="write_comment">Write your comment here...</string>
     <string name="event_rated_successfully">Event rated successfully!</string>
     <string name="comment_added_successfully">Comment added successfully!</string>
+    <string name="location_name">Location name: %s</string>
+    <string name="interests">Interests: %s</string>
 
     <string-array name="interests">
         <item>All</item>

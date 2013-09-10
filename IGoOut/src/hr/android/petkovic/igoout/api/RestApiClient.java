@@ -378,29 +378,55 @@ public class RestApiClient {
 		e.setRatingAvg((float) j.optDouble("ratingAvg"));
 		e.setStartTime(j.optString("startTime"));
 		e.setSummary(j.optString("summary"));
+
+		e.setInterest(j.optString("interest"));
+
 		return e;
+	}
+
+	private Location getLocationFromJSON(JSONObject j) throws JSONException {
+		Location loc = new Location();
+		loc.setAddress(j.optString("address"));
+		loc.setId(j.optInt("id"));
+		loc.setLat(j.optDouble("lat"));
+		loc.setLng(j.optDouble("lng"));
+		loc.setName(j.optString("name"));
+		loc.setPhoneNumber(j.optString("phoneNumber"));
+		loc.setPictureUrl(j.optString("pictureUrl"));
+		loc.setSummary(j.optString("summary"));
+		loc.setType(j.optString("type"));
+		loc.setWebsite(j.optString("website"));
+		loc.setWorkingHours(j.optString("workingHours"));
+
+		JSONArray jArray = j.optJSONArray("events");
+		if (jArray == null) {
+			loc.setEvents(new int[] { j.optInt("events") });
+		} else {
+			loc.setEvents(parseIntArray(j.optJSONArray("events")));
+		}
+
+		jArray = j.optJSONArray("interests");
+		if (jArray == null) {
+			loc.setInterests(new int[] { j.optInt("interests") });
+		} else {
+			loc.setInterests(parseIntArray(j.optJSONArray("interests")));
+		}
+
+		return loc;
 	}
 
 	private ArrayList<Location> parseLocations(JSONObject jsonLocations) {
 		ArrayList<Location> list = new ArrayList<Location>();
 		try {
 			JSONArray locations = jsonLocations.getJSONArray("location");
+			if (locations == null) {
+				list.add(getLocationFromJSON(jsonLocations));
+				return list;
+			}
 			for (int i = 0; i < locations.length(); i++) {
 				JSONObject j = locations.getJSONObject(i);
-				Location loc = new Location();
-				loc.setAddress(j.optString("address"));
-				loc.setId(j.optInt("id"));
-				loc.setEvents(parseIntArray(j.optJSONArray("events")));
-				loc.setLat(j.optDouble("lat"));
-				loc.setLng(j.optDouble("lng"));
-				loc.setName(j.optString("name"));
-				loc.setPhoneNumber(j.optString("phoneNumber"));
-				loc.setPictureUrl(j.optString("pictureUrl"));
-				loc.setSummary(j.optString("summary"));
-				loc.setType(j.optString("type"));
-				loc.setWebsite(j.optString("website"));
-				loc.setWorkingHours(j.optString("workingHours"));
-				list.add(loc);
+
+				list.add(getLocationFromJSON(j));
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

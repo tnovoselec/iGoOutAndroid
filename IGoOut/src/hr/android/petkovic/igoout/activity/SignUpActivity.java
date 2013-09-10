@@ -63,6 +63,7 @@ public class SignUpActivity extends AbstractFragmentActivity implements OnClickL
 						hideDialog();
 						Utils.saveUserSession(user, SignUpActivity.this);
 						startActivity(new Intent(SignUpActivity.this, HomeActivity.class));
+						finish();
 					}
 
 					@Override

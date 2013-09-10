@@ -21,6 +21,7 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -70,7 +71,7 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.event);
-		
+
 		mRequestQueue = Volley.newRequestQueue(this);
 		imageLoader = new ImageLoader(mRequestQueue, new BitmapLruCache(BitmapLruCache.getDefaultLruCacheSize()));
 		interestsList = getResources().getStringArray(R.array.interests);
@@ -78,7 +79,7 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 		header = getLayoutInflater().inflate(R.layout.event_header, null, false);
 
 		commentsList = (ListView) findViewById(R.id.event_comment_list);
-		commentsList.addHeaderView(header);
+		commentsList.addHeaderView(header, null, false);
 		eventImg = (NetworkImageView) header.findViewById(R.id.event_img);
 		eventName = (TextView) header.findViewById(R.id.event_name);
 		locationName = (TextView) header.findViewById(R.id.event_location_name);
@@ -93,6 +94,7 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 
 		rate.setOnClickListener(this);
 		alertMe.setOnClickListener(this);
+		moreInfo.setOnClickListener(this);
 		comment.setOnClickListener(this);
 
 		event = (Event) getIntent().getSerializableExtra(Constants.EVENT);
@@ -101,9 +103,10 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 		eventImg.setDefaultImageResId(R.drawable.ic_launcher);
 		eventImg.setImageUrl(event.getPictureUrl(), imageLoader);
 		eventName.setText(event.getName());
-		locationName.setText(location.getName());
-		interests.setText(buildInterests(event));
-		startTime.setText(getString(R.string.start_time, event.getStartTime()));
+		locationName.setText(getString(R.string.location_name, location.getName()));
+//		interests.setText(buildInterests(event));
+		interests.setText(getString(R.string.interests, event.getInterest()));
+		startTime.setText(getString(R.string.start_time, Utils.formatEventTime(event.getStartTime())));
 		summary.setText(event.getSummary());
 		moreInfo.setText(getString(R.string.more_info, event.getDetailsUrl()));
 		ratingBar.setRating(event.getRatingAvg());
@@ -167,7 +170,15 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 			addEventToCalendar();
 		} else if (v == comment) {
 			showCommentDialog();
+		} else if (v == moreInfo) {
+			openBrowser();
 		}
+	}
+
+	private void openBrowser() {
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setData(Uri.parse(event.getDetailsUrl()));
+		startActivity(intent);
 	}
 
 	@Override
