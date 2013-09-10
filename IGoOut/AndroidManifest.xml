@@ -18,8 +18,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppBaseTheme" >
         <activity
-            android:name="hr.android.petkovic.igoout.activity.SignInActivity"
-            android:label="@string/sign_in" >
+            android:name="hr.android.petkovic.igoout.activity.SignInActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

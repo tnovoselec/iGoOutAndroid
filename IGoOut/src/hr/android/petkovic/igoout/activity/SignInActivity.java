@@ -39,16 +39,17 @@ public class SignInActivity extends AbstractFragmentActivity implements OnClickL
 
 		signUpBtn.setOnClickListener(this);
 		signInBtn.setOnClickListener(this);
-		
+
 		User user = Utils.getUser(this);
-		if (user != null){
-			long lastVisit =Utils.getLastVisit(this);
-			if (System.currentTimeMillis() - lastVisit < ONE_MONTH_IN_MILIS){
+		if (user != null) {
+			long lastVisit = Utils.getLastVisit(this);
+			if (System.currentTimeMillis() - lastVisit < ONE_MONTH_IN_MILIS) {
 				Utils.updateLastVisit(this);
 				startActivity(new Intent(SignInActivity.this, HomeActivity.class));
 				finish();
 			}
 		}
+		getSupportActionBar().setTitle(R.string.sign_in);
 	}
 
 	@Override
