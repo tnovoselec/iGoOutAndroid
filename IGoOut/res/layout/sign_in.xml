@@ -22,8 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
-            android:padding="@dimen/padding_normal"
-            android:text="pero" />
+            android:padding="@dimen/padding_normal" />
 
         <EditText
             android:id="@+id/sign_in_password"
@@ -31,8 +30,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:inputType="textPassword"
-            android:padding="@dimen/padding_normal"
-            android:text="peric" />
+            android:padding="@dimen/padding_normal" />
 
         <Button
             android:id="@+id/sign_in_btn"
