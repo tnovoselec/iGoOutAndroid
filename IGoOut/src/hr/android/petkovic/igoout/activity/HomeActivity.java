@@ -5,6 +5,7 @@ import hr.android.petkovic.igoout.R;
 import hr.android.petkovic.igoout.api.LocationsListener;
 import hr.android.petkovic.igoout.api.RestApiClient;
 import hr.android.petkovic.igoout.model.Location;
+import hr.android.petkovic.igoout.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class HomeActivity extends AbstractFragmentActivity implements OnClickListener {
 
@@ -58,7 +60,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	@Override
 	protected void onResume() {
 		super.onResume();
-	
+
 	}
 
 	@Override
@@ -82,6 +84,10 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 	}
 
 	private void search() {
+		if (!Utils.isOnline(this)) {
+			Toast.makeText(this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+			return;
+		}
 		// onSearchResults(MockData.getLocations());
 		locationsListener = new LocationsListener() {
 
@@ -105,7 +111,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 			Intent intent = new Intent(this, SearchResultsActivity.class);
 			intent.putExtra(Constants.LOCATIONS, locations);
 			startActivity(intent);
-		}else{
+		} else {
 			showErrorMsg();
 		}
 	}
@@ -122,7 +128,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 					if (isChecked) {
 						setAllChecked(mSelectedInterests);
 					} else {
-//						setAllUnChecked(mSelectedInterests);
+						// setAllUnChecked(mSelectedInterests);
 					}
 					for (int i = 0; i < mSelectedInterests.length; i++) {
 						((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
@@ -153,7 +159,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 					if (isChecked) {
 						setAllChecked(mSelectedVenues);
 					} else {
-//						setAllUnChecked(mSelectedVenues);
+						// setAllUnChecked(mSelectedVenues);
 					}
 					for (int i = 0; i < mSelectedInterests.length; i++) {
 						((AlertDialog) dialog).getListView().setItemChecked(which, isChecked);
@@ -296,6 +302,7 @@ public class HomeActivity extends AbstractFragmentActivity implements OnClickLis
 			what[i] = false;
 		}
 	}
+
 	private void showErrorMsg() {
 		AlertDialog.Builder builder = new Builder(this);
 		builder.setTitle(R.string.app_name);

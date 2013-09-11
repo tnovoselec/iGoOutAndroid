@@ -68,6 +68,10 @@ public class SignInActivity extends AbstractFragmentActivity implements OnClickL
 		if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
 			Toast.makeText(this, "Error occurred, please check your data", Toast.LENGTH_SHORT);
 		} else {
+			if (!Utils.isOnline(this)) {
+				Toast.makeText(this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+				return;
+			}
 			userListener = new UserListener() {
 
 				@Override

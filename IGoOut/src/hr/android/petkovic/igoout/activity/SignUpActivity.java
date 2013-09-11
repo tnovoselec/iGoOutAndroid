@@ -56,6 +56,10 @@ public class SignUpActivity extends AbstractFragmentActivity implements OnClickL
 			showErrorMsg(getString(R.string.error_input_too_short));
 		} else {
 			if (password.equals(passwordRepeat)) {
+				if (!Utils.isOnline(this)) {
+					Toast.makeText(this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+					return;
+				}
 				userListener = new UserListener() {
 
 					@Override

@@ -104,7 +104,7 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 		eventImg.setImageUrl(event.getPictureUrl(), imageLoader);
 		eventName.setText(event.getName());
 		locationName.setText(getString(R.string.location_name, location.getName()));
-//		interests.setText(buildInterests(event));
+		// interests.setText(buildInterests(event));
 		interests.setText(getString(R.string.interests, event.getInterest()));
 		startTime.setText(getString(R.string.start_time, Utils.formatEventTime(event.getStartTime())));
 		summary.setText(event.getSummary());
@@ -120,6 +120,10 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 	}
 
 	private void getData() {
+		if (!Utils.isOnline(this)) {
+			Toast.makeText(this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+			return;
+		}
 		showDialog();
 		commentsListener = new CommentsListener() {
 
@@ -151,13 +155,13 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 	}
 
 	private void addEventToCalendar() {
-		Calendar cal = Calendar.getInstance();
+
 		Intent intent = new Intent(Intent.ACTION_EDIT);
 		intent.setType("vnd.android.cursor.item/event");
-		intent.putExtra("beginTime", cal.getTimeInMillis());
-		intent.putExtra("allDay", true);
+		intent.putExtra("beginTime", event.getEventDate().getTime());
+
 		intent.putExtra("rrule", "FREQ=YEARLY");
-		intent.putExtra("endTime", cal.getTimeInMillis() + 60 * 60 * 1000);
+		intent.putExtra("endTime", event.getEventDate().getTime() + 60 * 60 * 1000);
 		intent.putExtra("title", event.getName());
 		startActivity(intent);
 	}
@@ -216,6 +220,10 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				if (!Utils.isOnline(EventActivity.this)) {
+					Toast.makeText(EventActivity.this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+					return;
+				}
 				int rating = (int) rate.getRating();
 				RateListener rateListener = new RateListener() {
 
@@ -262,6 +270,10 @@ public class EventActivity extends AbstractFragmentActivity implements OnClickLi
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				if (!Utils.isOnline(EventActivity.this)) {
+					Toast.makeText(EventActivity.this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+					return;
+				}
 				CommentListener commentListener = new CommentListener() {
 
 					@Override

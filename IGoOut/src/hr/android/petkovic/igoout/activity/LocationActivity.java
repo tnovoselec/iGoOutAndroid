@@ -12,6 +12,7 @@ import hr.android.petkovic.igoout.model.Event;
 import hr.android.petkovic.igoout.model.Location;
 import hr.android.petkovic.igoout.model.MockData;
 import hr.android.petkovic.igoout.utils.BitmapLruCache;
+import hr.android.petkovic.igoout.utils.Utils;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -126,6 +127,10 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	}
 
 	private void getData() {
+		if (!Utils.isOnline(this)) {
+			Toast.makeText(this, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+			return;
+		}
 
 		showDialog();
 		RestApiClient.get().getEvents(location.getId(), eventsListener);

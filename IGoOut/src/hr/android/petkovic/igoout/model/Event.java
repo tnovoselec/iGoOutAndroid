@@ -1,6 +1,9 @@
 package hr.android.petkovic.igoout.model;
 
+import hr.android.petkovic.igoout.utils.Utils;
+
 import java.io.Serializable;
+import java.util.Date;
 
 public class Event implements Serializable {
 
@@ -106,6 +109,10 @@ public class Event implements Serializable {
 
 	public void setInterest(String interest) {
 		this.interest = interest;
+	}
+
+	public Date getEventDate() {
+		return Utils.formatEventDate(startTime);
 	}
 
 }

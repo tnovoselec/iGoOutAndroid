@@ -8,6 +8,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
+import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 
 public class Utils {
@@ -58,5 +59,21 @@ public class Utils {
 		} catch (Exception e) {
 			return time;
 		}
+	}
+
+	public static Date formatEventDate(String time) {
+		try {
+			SimpleDateFormat sdf2 = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
+			Date d = sdf2.parse(time);
+
+			return d;
+		} catch (Exception e) {
+			return new Date();
+		}
+	}
+
+	public static boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		return (cm.getActiveNetworkInfo() != null) && cm.getActiveNetworkInfo().isConnectedOrConnecting();
 	}
 }

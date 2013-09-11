@@ -35,6 +35,7 @@
     <string name="comment_added_successfully">Comment added successfully!</string>
     <string name="location_name">Location name: %s</string>
     <string name="interests">Interests: %s</string>
+    <string name="error_no_internet_connection">Please check your Internet connection</string>
 
     <string-array name="interests">
         <item>All</item>
