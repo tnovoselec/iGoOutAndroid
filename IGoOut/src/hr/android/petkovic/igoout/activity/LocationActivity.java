@@ -10,7 +10,6 @@ import hr.android.petkovic.igoout.api.EventsListener;
 import hr.android.petkovic.igoout.api.RestApiClient;
 import hr.android.petkovic.igoout.model.Event;
 import hr.android.petkovic.igoout.model.Location;
-import hr.android.petkovic.igoout.model.MockData;
 import hr.android.petkovic.igoout.utils.BitmapLruCache;
 import hr.android.petkovic.igoout.utils.Utils;
 import android.content.Intent;
@@ -151,7 +150,7 @@ public class LocationActivity extends AbstractFragmentActivity implements OnClic
 	}
 
 	@Override
-	protected void onResume() { // �to se doga�a kod resume?
+	protected void onResume() {
 		super.onResume();
 
 	}
